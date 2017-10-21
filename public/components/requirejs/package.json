@@ -26,10 +26,10 @@
   "bugs": {
     "url": "https://github.com/jrburke/r.js/issues"
   },
-  "location": "components\\requirejs",
+  "location": "components/requirejs",
   "files": [
-    "bin",
     "README.md",
+    "bin",
     "require.js"
   ]
 }

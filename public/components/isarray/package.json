@@ -32,11 +32,11 @@
     "url": "https://github.com/juliangruber/isarray/issues"
   },
   "_id": "isarray@0.0.1",
-  "location": "components\\isarray",
+  "location": "components/isarray",
   "files": [
+    "README.md",
     "build",
     "component.json",
-    "index.js",
-    "README.md"
+    "index.js"
   ]
 }

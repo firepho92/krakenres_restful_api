@@ -48,20 +48,20 @@
     "url": "https://github.com/krakenjs/dust-makara-helpers/issues"
   },
   "homepage": "https://github.com/krakenjs/dust-makara-helpers#readme",
-  "location": "components\\dust-makara-helpers",
+  "location": "components/dust-makara-helpers",
   "files": [
     ".eslintrc",
     ".jshintrc",
     ".npmignore",
     ".travis.yml",
+    "CHANGELOG.md",
+    "README.md",
     "browser.amd.js",
     "browser.browser.js",
     "browser.js",
     "browser.umd.js",
-    "CHANGELOG.md",
     "common.js",
     "index.js",
-    "README.md",
     "test"
   ]
 }

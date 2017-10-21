@@ -34,11 +34,11 @@
   },
   "homepage": "https://github.com/substack/jsonify#readme",
   "_id": "jsonify@0.0.0",
-  "location": "components\\jsonify",
+  "location": "components/jsonify",
   "files": [
+    "README.markdown",
     "index.js",
     "lib",
-    "README.markdown",
     "test"
   ]
 }

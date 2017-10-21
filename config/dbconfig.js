@@ -1,5 +1,5 @@
 'use strict'
 
-const db = 'mysql://krakenres:JmvW7c5UhyahoRFM@localhost/krakenres';
+const db = 'mysql://krakenres_client:auza23364773@localhost/krakenres';
 
 module.exports = db;

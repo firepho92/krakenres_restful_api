@@ -61,15 +61,15 @@
     "url": "https://github.com/substack/tape/issues"
   },
   "_id": "tape@2.3.3",
-  "location": "components\\tape",
+  "location": "components/tape",
   "files": [
     ".npmignore",
     ".travis.yml",
+    "LICENSE",
     "bin",
     "example",
     "index.js",
     "lib",
-    "LICENSE",
     "readme.markdown",
     "test"
   ]

@@ -31,11 +31,11 @@
     "url": "https://github.com/rvagg/string_decoder/issues"
   },
   "_id": "string_decoder@1.0.3",
-  "location": "components\\string_decoder",
+  "location": "components/string_decoder",
   "files": [
     ".npmignore",
-    "lib",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "lib"
   ]
 }

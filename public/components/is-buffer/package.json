@@ -52,12 +52,12 @@
   "readmeFilename": "README.md",
   "homepage": "https://github.com/feross/is-buffer#readme",
   "_id": "is-buffer@1.1.5",
-  "location": "components\\is-buffer",
+  "location": "components/is-buffer",
   "files": [
     ".npmignore",
-    "index.js",
     "LICENSE",
     "README.md",
+    "index.js",
     "test"
   ]
 }
