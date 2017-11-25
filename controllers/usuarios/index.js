@@ -1,20 +1,24 @@
 'use strict';
 
-var mysql = require('mysql');
+var {Client} = require('pg');
 var config = require('../../config/dbconfig');
 var crypto = require('crypto');
 
-var connection = mysql.createConnection(config);
+var client = new Client(config);
 
-connection.connect();
+client.connect();
 
 module.exports = function (router) {
 
     router.get('/', function (req, res) {
-	var usuario = req.body;
-        connection.query('SELECT usuarios.nombre, puestos.puesto, status.status_name, usuarios.dias FROM usuarios INNER JOIN puestos ON usuarios.puesto = puestos.Id INNER JOIN status ON usuarios.status = status.Id', usuario.Id, function (error, results, fields) {
-            if (error) throw error;
-            res.send(results);
+    var usuario = req.body;
+    
+        client.query('SELECT usuarios.nombres, usuarios.apellidos FROM usuarios', (err, results) => {
+            if(err){
+                console.log(err.stack);
+            }else{
+                res.send(results.rows);
+            }
         });
     });
 
@@ -26,18 +30,20 @@ module.exports = function (router) {
         usuario.password = hash.toString('hex');
         usuario.salt = salt;
 
-        console.log('password : ' + usuario.password + " password length: " + usuario.password.length + ', salt: ' + usuario.salt + " salt length: " + usuario.salt.length);
-
-        connection.query('INSERT INTO usuarios SET ?', usuario, function(error, results, fields) {
-            if(error) throw error;
-            res.send(results);
+        client.query('INSERT INTO usuarios(nombres, apellidos, usuario, password, salt, status, logged) VALUES($1, $2, $3, $4, $5, $6, $7)', [usuario.nombres, usuario.apellidos, usuario.usuario, usuario.password, usuario.salt, usuario.status, usuario.logged], (err, results) => {
+            if(err){
+                console.log(err.stack);
+            }else{
+                res.send(results);
+            }
         });
+
     });
 
     router.put('/', function(req, res) {
         var usuario = req.body;
 
-        connection.query('UPDATE usuarios SET ? WHERE Id = ?', [usuario, usuario.Id], function(error, results, fields){
+        client.query('UPDATE usuarios SET $1 WHERE Id = $2', [usuario, usuario.Id], function(error, results, fields){
             if(error) throw error;
             res.send(results);
         });
@@ -53,34 +59,33 @@ module.exports = function (router) {
     });
 
     router.post('/login', function(req, res) {
-      var usuario = req.body;
-
-      connection.query('SELECT * FROM usuarios WHERE usuario = ?', usuario.usuario, function(error, results, fields) {
-        if(error) throw error;
-        if(results.length === 0){
-          res.send("Error, intente de nuevo");
-        }else{
-            var salted_password = hashPassword(results[0].salt, usuario.password);
-            var user = results[0];
-            if(salted_password === user.password){   
-                connection.query('UPDATE usuarios SET logged=? WHERE Id = ?', [1, user.Id], function(error, results, fields){
-                    if(error) throw error;
-                    delete user.password;
-                    delete user.salt;
-                    delete user.logged;
-                    res.send(user);
-                });   
+        var usuario = req.body;
+        client.query('SELECT * FROM usuarios WHERE usuario = $1', [usuario.usuario], function(error, results) {
+            if(error) throw error;
+            if(results.rows.length === 0){
+            res.send("Error, intente de nuevo");
             }else{
-            res.send("Error intente de nuevo.");
+                var salted_password = hashPassword(results.rows[0].salt, usuario.password);
+                var user = results.rows[0];
+                if(salted_password === user.password){
+                    client.query('UPDATE usuarios SET logged=$1 WHERE usuarios_id = $2', [1, user.usuarios_id], function(error, results){
+                        if(error) throw error;
+                        delete user.password;
+                        delete user.salt;
+                        delete user.logged;
+                        res.send(user);
+                    });   
+                }else{
+                res.send(false);
+                }
             }
-        }
-      })
-    });
+        })
+        });
 
     router.post('/logout', function(req, res) {
         var usuario = req.body;
 
-        connection.query('UPDATE usuarios SET logged=? WHERE Id = ?', [0, usuario.Id], function(error, results, fields){
+        client.query('UPDATE usuarios SET logged = 0 WHERE usuarios_id = $1', [usuario.id], function(error, results){
             if(error) throw error;
             res.send(results);
         });  
@@ -88,24 +93,27 @@ module.exports = function (router) {
 
     router.get('/isLogged', function(req, res) {
 
-        connection.query('SELECT Id, nombre, usuario, inicio, puesto, status, dias FROM usuarios WHERE logged=?', 1, function(error, results, fields){
+        client.query('SELECT usuarios_id, nombres, apellidos, usuario, status FROM usuarios WHERE logged=1', function(error, results){
             if(error) throw error;
-            res.send(results[0]);
+            if(results.rows.length == 0){
+                res.send(false);
+            }else{
+                res.send(results.rows[0]);
+            }
         });  
     });
 
     router.get('/cajeros', function(req, res) {
         
-        connection.query('SELECT Id, nombre, usuario, inicio, status, dias FROM usuarios WHERE puesto=3', function(error, results, fields){
+        client.query('SELECT Id, nombre, usuario, inicio, status, dias FROM usuarios WHERE puesto=1', function(error, results){
             if(error) throw error;
-            res.send(results);
+            res.send(results.rows);
         });  
     });
 
     router.get('/:Id', function (req, res) {
         var usuario = req.params;
-        console.log(usuario.Id);
-        connection.query('SELECT usuarios.nombre, puestos.puesto, status.status_name, usuarios.dias FROM usuarios INNER JOIN puestos ON usuarios.puesto = puestos.Id INNER JOIN status ON usuarios.status = status.Id WHERE usuarios.Id=?', usuario.Id, function (error, results, fields) {
+        connection.query('SELECT usuarios.nombre, puestos.puesto, status.status_name, usuarios.dias FROM usuarios INNER JOIN puestos ON usuarios.puesto = puestos.Id INNER JOIN status ON usuarios.status = status.Id WHERE usuarios.Id=?', usuario.Id, function (error, results) {
             if (error) throw error;
             if(results.length != 0){
                 res.send(results[0]);

@@ -21,6 +21,8 @@
     "kraken-js": "^2.0.0",
     "makara": "^2.0.3",
     "mysql": "^2.15.0",
+    "mysql-events": "^0.0.11",
+    "pg": "^7.3.0",
     "requirejs": "^2.3.5"
   },
   "devDependencies": {
